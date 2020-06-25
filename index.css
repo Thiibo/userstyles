@@ -1,0 +1,56 @@
+#landing {background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("./img/bg/dse.png");}
+
+section:not(#landing) + section::before {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 1px;
+  margin: auto;
+  background-color: rgb(200, 200, 200);
+}
+
+#selectstyle {
+  padding: 30px 0;
+}
+#selectstyle h2 {
+  font-weight: normal;
+  margin-bottom: 20px;
+  text-align: center;
+  color: rgb(80, 80, 80)
+}
+#selectstyle ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+}
+#selectstyle ul li {
+  flex: 1;
+  background-color: rgba(50, 50, 50, 0.1);
+  border-radius: 15px;
+  margin: 15px;
+  padding: 25px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+#selectstyle ul li:hover {background-color: rgba(50, 50, 50, 0.15);}
+#selectstyle ul li.selected {
+  -webkit-box-shadow: 0px 0px 44px -10px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 44px -10px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 44px -10px rgba(0,0,0,0.75);
+  background-color: rgb(240, 240, 240);
+}
+#selectstyle ul li img {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 80px;
+}
+#selectstyle ul li span {
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+}
+
+#e {
+  height: 200px;
+}
