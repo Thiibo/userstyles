@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title></title>
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../thiibo.github.io/master.css"> <!-- Debug code -->
+    <link rel="stylesheet" href="./master.css"> <!-- Debug code -->
     <link rel="stylesheet" href="./index.css">
   </head>
   <body>
@@ -26,39 +26,50 @@
     </section>
     <section id="method" class="container">
       <h2>Please pick an installation method:</h2>
-      <ul>
-        <li class="method">Install UserCSS <span class="detail">(recommended)</span></li>
-        <li class="method">Install UserJS</li>
-        <li class="method">Use Userstyle.org...</li>
-        <li class="method">Install HardcodedCSS<span class="detail">*</span></li>
-        <li class="method">Install HardcodedJS<span class="detail">*</span></li>
-        <li class="method">Get plain CSS<span class="detail">*</span></li>
+      <ul class="selectbar">
+        <li code="ucs" class="method selectbaroption selected">Install UserCSS <span class="detail">(recommended)</span></li>
+        <li code="hjs" class="method selectbaroption">Install (Hardcoded) UserJS<span class="detail">*</span></li>
+        <li code="usr" class="method selectbaroption">Use Userstyle.org...</li>
+        <li code="huc" class="method selectbaroption">Install Hardcoded UserCSS<span class="detail">*</span></li>
+        <li code="pcs" class="method selectbaroption">Get plain CSS<span class="detail">*</span></li>
       </ul>
       <small>*: With this method, you need to re-install the style every update.</small>
     </section>
     <section id="selectstyle" class="container">
       <h2>Please pick a userstyle you want to install:</h2>
       <ul>
-        <li class="userstyle">
+        <li code="dse" class="userstyle selected">
           <img src="./img/thumb/dse.png" alt="Thumbnail">
           <span>Dark Scratch Editor</span>
         </li>
-        <li class="userstyle">
+        <li code="dhl" class="userstyle">
           <img src="./img/thumb/dhl.png" alt="Thumbnail">
           <span>Duolingo hide leauges</span>
         </li>
-        <li class="userstyle">
+        <li code="sah" class="userstyle">
           <img src="./img/thumb/sah.png" alt="Thumbnail">
           <span>Startpage ad highlighter</span>
         </li>
-        <li class="userstyle">
+        <li code="cep" class="userstyle">
           <img src="./img/thumb/cep.png" alt="Thumbnail">
           <span>Crowdin Enhanced Profile</span>
         </li>
       </ul>
     </section>
-    <section id="e">
+    <section id="settingsandpreview" class="container">
+      <div id="settings">
+        <h2>Settings</h2>
+        <ul id="settingslist"></ul>
+      </div><!--
+      --><div id="preview">
+        <h2>Preview</h2>
+        <div id="previewwindow">
 
+        </div>
+      </div>
+    </section>
+    <section id="install" class="container">
+      <button id="bInstall" type="button" name="bInstall">Install</button>
     </section>
     <script type="text/javascript" src="./index.js"></script>
   </body>

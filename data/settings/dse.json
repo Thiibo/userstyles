@@ -1,0 +1,33 @@
+{
+  "theme": {
+    "type": "selectbar",
+    "label": "Theme",
+    "options": {
+      "theme--classic": {
+        "label": "Classic"
+      },
+      "theme--seablue": {
+        "label": "Sea blue"
+      },
+      "theme--deepblack": {
+        "label": "Deep black"
+      }
+    }
+  },
+  "customcolors": {
+    "type": "checkbox",
+    "label": "Use custom colors?",
+    "group": {
+      "primarycolor": {
+        "type": "color",
+        "label": "Primary color",
+        "standard": "#4d97ff"
+      },
+      "secundarycolor": {
+        "type": "color",
+        "label": "Secundary color",
+        "standard": "#ff8c1a"
+      }
+    }
+  }
+}
