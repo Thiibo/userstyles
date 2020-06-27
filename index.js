@@ -90,66 +90,8 @@ async function setSections() {
     // Load settings
     let cachePath = './data/settings/' + userstyle + '.json';
     await fetchToCache(cachePath, true);
-    // Update HTML
-    let $newsettings = document.createElement('ul');
-    for (let [option, optionValue] of Object.entries(cache[cachePath])) {
-      // Create setting
-      let $setting = document.createElement('li');
-      $setting.classList.add('setting');
-
-      // Create and append label
-      let $label = document.createElement('label');
-      $label.innerHTML = optionValue.label + (optionValue.type !== 'checkbox' ? ': ' : '');
-      $setting.appendChild($label);
-
-      // Create content
-      let $optionContent;
-      if (optionValue.type === 'selectbar') {
-        $optionContent = document.createElement('ul');
-      } else {
-        $optionContent = document.createElement('div');
-      }
-      // Type specific functionality
-      switch (optionValue.type) {
-        case 'selectbar':
-          // Create individual options
-          for (let [selectOption, selectOptionValue] of Object.entries(optionValue.options)) {
-            let $li = document.createElement('li');
-            $li.classList.add('selectbaroption');
-            $li.setAttribute('onclick', 'selectbarClicked(this)');
-            $li.setAttribute('code', selectOption)
-            $li.innerHTML = selectOptionValue.label;
-            $optionContent.appendChild($li);
-          }
-          // Set default
-          $optionContent.firstChild.classList.add('selected');
-          settings[option] = $optionContent.firstChild.getAttribute('code');
-          break;
-        case 'checkbox':
-          $optionContent.setAttribute('onclick', 'checkboxClicked(this)');
-          if (optionValue.hasOwnProperty('group')) {
-            $optionContent.classList.add('hasGroup');
-            let $group = document.createElement('div');
-            $group.classList.add('group', 'hidden');
-          }
-          break;
-        default:
-
-      }
-      $optionContent.classList.add('content', optionValue.type);
-      if (optionValue.type === 'checkbox') {
-        $setting.prepend($optionContent);
-      } else {
-        $setting.appendChild($optionContent);
-      }
-      $setting.setAttribute('code', option);
-
-      // Append setting
-      $newsettings.appendChild($setting);
-    }
     // Update settings
-    $settingslist.innerHTML = $newsettings.innerHTML;
-
+    $settingslist.innerHTML = settingsToHTML(cache[cachePath]).innerHTML;
     // Show settings
     $settings.classList.remove('hidden');
   } else {
@@ -158,3 +100,65 @@ async function setSections() {
   resized();
 }
 setSections();
+
+function settingsToHTML(src) {
+  let $newsettings = document.createElement('ul');
+  for (let [option, optionValue] of Object.entries(src)) {
+    // Create setting
+    let $setting = document.createElement('li');
+    $setting.classList.add('setting');
+
+    // Create and append label
+    let $label = document.createElement('label');
+    $label.innerHTML = optionValue.label + (optionValue.type !== 'checkbox' ? ': ' : '');
+    $setting.appendChild($label);
+
+    // Create content
+    let $optionContent;
+    if (optionValue.type === 'selectbar') {
+      $optionContent = document.createElement('ul');
+    } else {
+      $optionContent = document.createElement('div');
+    }
+    // Type specific functionality
+    switch (optionValue.type) {
+      case 'selectbar':
+        // Create individual options
+        for (let [selectOption, selectOptionValue] of Object.entries(optionValue.options)) {
+          let $li = document.createElement('li');
+          $li.classList.add('selectbaroption');
+          $li.setAttribute('onclick', 'selectbarClicked(this)');
+          $li.setAttribute('code', selectOption)
+          $li.innerHTML = selectOptionValue.label;
+          $optionContent.appendChild($li);
+        }
+        // Set default
+        $optionContent.firstChild.classList.add('selected');
+        settings[option] = $optionContent.firstChild.getAttribute('code');
+        break;
+      case 'checkbox':
+        $optionContent.setAttribute('onclick', 'checkboxClicked(this)');
+        if (optionValue.hasOwnProperty('group')) {
+          $optionContent.classList.add('hasGroup');
+          let $group = document.createElement('ul');
+          $group.classList.add('group', 'hidden');
+          $group.innerHTML = settingsToHTML(optionValue.group).innerHTML;
+          $setting.appendChild($group);
+        }
+        break;
+      default:
+
+    }
+    $optionContent.classList.add('content', optionValue.type);
+    if (optionValue.type === 'checkbox') {
+      $setting.prepend($optionContent);
+    } else {
+      $setting.appendChild($optionContent);
+    }
+    $setting.setAttribute('code', option);
+
+    // Append setting
+    $newsettings.appendChild($setting);
+  }
+  return $newsettings;
+}

@@ -27,6 +27,20 @@
         "type": "color",
         "label": "Secundary color",
         "standard": "#ff8c1a"
+      },
+      "debug": {
+        "type": "checkbox",
+        "label": "Debug",
+        "group": {
+          "debug2": {
+            "type": "checkbox",
+            "label": "debug2"
+          },
+          "debug3": {
+            "type": "color",
+            "label": "debug3"
+          }
+        }
       }
     }
   }
