@@ -57,6 +57,8 @@ for (let i = 0; i < $userstyles.length; i++) {
     userstyle = this.getAttribute('code');
     // Clear settings
     for (let [key, value] of Object.entries(settings)) params.delete(key);
+    let $pickrs = document.getElementsByClassName('pcr-app');
+    while ($pickrs.length > 0) $pickrs[0].parentNode.removeChild($pickrs[0]);
     settings = {};
     await setSections();
     updateURL();
