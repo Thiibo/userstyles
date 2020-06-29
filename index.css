@@ -78,8 +78,9 @@ section small {
   vertical-align: top;
 }
 #settingslist {list-style: none;}
-.setting label {font-size: 1.2rem;}
+.setting label {font-size: 1.1rem;}
 .setting .content {margin: 20px 0;}
+.setting .spaceunder {margin-bottom: 20px;}
 .setting .checkbox {
   display: inline-block;
   height: 1.2rem;
@@ -89,6 +90,38 @@ section small {
   transform: translateY(0.1rem);
   background: rgb(240, 240, 240);
   cursor: pointer;
+}
+.setting .checkbox.active {background-color: orange;}
+.setting .checkbox.active::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  width: 50%;
+  height: 20%;
+  top: 30%; left: 20%;
+  background-color: transparent;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg);
+}
+.setting .group {
+  display: block;
+  list-style: none;
+  border-left: 1px solid rgb(220, 220, 220);
+  padding: 20px 0 20px 30px;
+  margin: 5px 0 20px 0.6rem;
+}
+.setting .color + label {
+  display: inline-block;
+  transform: translateY(32.5%);
+}
+.setting .color {
+  display: inline-block;
+  margin: 0 10px 0 0;
+  cursor: pointer;
+}
+.pickr .pcr-button, .pickr .pcr-button::after, .pickr .pcr-button::before {
+  border-radius: 50%;
 }
 
 #preview h2 {
@@ -124,3 +157,47 @@ section small {
   background: orange;
   color: white;
 }
+
+#saveLink {
+  margin: 60px 0;
+}
+#saveLinkBar {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgb(240, 240, 240);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.6rem;
+  width: 100%;
+  height: 3rem;
+}
+#saveLinkBar::after {
+  content: '';
+  display: inline-block;
+  position: relative;
+  left: -3.5rem;
+  width: 1px;
+  height: 60%;
+  background-color: rgb(200, 200, 200);
+}
+#saveLinkBar input {
+  display: inline-block;
+  flex: 1;
+  height: 100%;
+  margin: 0 1rem;
+  font-size: 0.8rem;
+  border: 0;
+  background-color: transparent;
+}
+#saveLinkCopy {
+  height: 100%;
+  padding: 0 0.8rem;
+  margin-left: 0.6rem;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+}
+#saveLinkCopy img {
+  vertical-align: middle;
+  height: 1.4rem;
+}
+#saveLinkCopy:hover img {filter: contrast(0.2);}

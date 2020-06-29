@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"> <!-- Pickr (color picker) - Nano theme -->
     <link rel="stylesheet" href="./master.css"> <!-- Debug code -->
     <link rel="stylesheet" href="./index.css">
   </head>
@@ -27,18 +28,19 @@
     <section id="method" class="container">
       <h2>Please pick an installation method:</h2>
       <ul class="selectbar">
-        <li code="ucs" class="method selectbaroption selected">Install UserCSS <span class="detail">(recommended)</span></li>
-        <li code="hjs" class="method selectbaroption">Install (Hardcoded) UserJS<span class="detail">*</span></li>
+        <li code="ucs" class="method selectbaroption">Install UserCSS <span class="detail">(recommended)</span></li>
+        <li code="hcs" class="method selectbaroption">Install hardcoded UserCSS<span class="detail">*</span></li>
+        <li code="hjs" class="method selectbaroption">Install (hardcoded) UserJS<span class="detail">*</span></li>
+        <li code="pcs" class="method selectbaroption">Get plain (hardcoded) CSS<span class="detail">*</span></li>
         <li code="usr" class="method selectbaroption">Use Userstyle.org...</li>
-        <li code="huc" class="method selectbaroption">Install Hardcoded UserCSS<span class="detail">*</span></li>
-        <li code="pcs" class="method selectbaroption">Get plain CSS<span class="detail">*</span></li>
       </ul>
       <small>*: With this method, you need to re-install the style every update.</small>
+      <small>Confused? UserCSS will be the easiest to use.</small>
     </section>
     <section id="selectstyle" class="container">
       <h2>Please pick a userstyle you want to install:</h2>
       <ul>
-        <li code="dse" class="userstyle selected">
+        <li code="dse" class="userstyle">
           <img src="./img/thumb/dse.png" alt="Thumbnail">
           <span>Dark Scratch Editor</span>
         </li>
@@ -68,9 +70,19 @@
         </div>
       </div>
     </section>
-    <section id="install" class="container">
+    <section id="maincontrols" class="container">
       <button id="bInstall" type="button" name="bInstall">Install</button>
+      <div id="saveLink">
+        <h2>Share these settings:</h2>
+        <div id="saveLinkBar">
+          <input id="saveLinkInput" type="text" name="saveLinkInput" value="">
+          <button id="saveLinkCopy">
+            <img src="./img/copy.png" alt="Copy">
+          </button>
+        </div>
+      </div>
     </section>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script> <!-- Pickr (color picker) - Modern JS -->
     <script type="text/javascript" src="./index.js"></script>
   </body>
 </html>

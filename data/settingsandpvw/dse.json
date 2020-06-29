@@ -1,0 +1,33 @@
+{
+  "t": {
+    "type": "selectbar",
+    "label": "Theme",
+    "options": {
+      "cl": {
+        "label": "Classic"
+      },
+      "sb": {
+        "label": "Sea blue"
+      },
+      "db": {
+        "label": "Deep black"
+      }
+    }
+  },
+  "cc": {
+    "type": "checkbox",
+    "label": "Use custom colors?",
+    "group": {
+      "c1": {
+        "type": "color",
+        "label": "Primary color",
+        "default": "#4d97ff"
+      },
+      "c2": {
+        "type": "color",
+        "label": "Secundary color",
+        "default": "#ff8c1a"
+      }
+    }
+  }
+}
