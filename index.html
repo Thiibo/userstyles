@@ -39,24 +39,7 @@
     </section>
     <section id="selectstyle" class="container">
       <h2>Please pick a userstyle you want to install:</h2>
-      <ul>
-        <li code="dse" class="userstyle">
-          <img src="./img/thumb/dse.png" alt="Thumbnail">
-          <span>Dark Scratch Editor</span>
-        </li>
-        <li code="dhl" class="userstyle">
-          <img src="./img/thumb/dhl.png" alt="Thumbnail">
-          <span>Duolingo hide leauges</span>
-        </li>
-        <li code="sah" class="userstyle">
-          <img src="./img/thumb/sah.png" alt="Thumbnail">
-          <span>Startpage ad highlighter</span>
-        </li>
-        <li code="cep" class="userstyle">
-          <img src="./img/thumb/cep.png" alt="Thumbnail">
-          <span>Crowdin Enhanced Profile</span>
-        </li>
-      </ul>
+      <ul id="stylelist"></ul>
     </section>
     <section id="settingsandpreview" class="container">
       <div id="settings">
@@ -64,10 +47,9 @@
         <ul id="settingslist"></ul>
       </div><!--
     --><div id="preview">
-        <h2>Preview</h2>
-        <div id="previewwindow">
-
-        </div>
+        <h2>Preview <button id="pvwrandomize" class="hidden" type="button" name="randomize">⭮</button></h2>
+        <div id="previewwindow"></div>
+        <small id="pvwwarning" class="hidden">This preview is just example! Customize the style using the settings.</small>
       </div>
     </section>
     <section id="maincontrols" class="container">

@@ -3,23 +3,55 @@ const $header = document.getElementsByTagName("header")[0];
 const $logo = document.getElementById("logo");
 const $methods = document.getElementsByClassName('method');
 const $userstyles = document.getElementsByClassName('userstyle');
+const $stylelist = document.getElementById('stylelist');
 const $settings = document.getElementById('settings');
 const $settingslist = document.getElementById('settingslist');
+const $pvwrandomize = document.getElementById('pvwrandomize');
 const $pvwwindow = document.getElementById('previewwindow');
+const $pvwwarning = document.getElementById('pvwwarning');
 const $saveLinkInput = document.getElementById('saveLinkInput');
 const $saveLinkCopy = document.getElementById('saveLinkCopy');
 
 // VARIABLES
 let cache = {};
 let settings = {};
+var pvwColoring; // Global variable for setSections() and $pvwrandomize.click()
 
-// Test if current method and userstyle have settings
-var hasSettings = () => (method === 'hjs' || method === 'hcs' || method === 'pcs') && (userstyle === 'dse' || userstyle === 'sah');
+// Set userstyles
+const USERSTYLES = {
+  "dse": "Dark Scratch Editor",
+  "dhl": "Duolingo hide leagues",
+  "sah": "Startpage ad highlighter",
+  "cep": "Crowdin enhanced profile"
+}
+for (let [key, value] of Object.entries(USERSTYLES)) {
+  // Create 'li'
+  let $li = document.createElement('li');
+  $li.setAttribute('code', key);
+  $li.classList.add('userstyle');
+  // Create 'li > img' and append
+  let $img = document.createElement('img');
+  $img.src = "./img/thumb/" + key + ".png"
+  $img.setAttribute('alt', "Thumbnail for userstyle \"" + value + "\"");
+  $li.appendChild($img);
+  // Create 'li > span' and append
+  let $span = document.createElement('span');
+  $span.innerHTML = value;
+  $li.appendChild($span);
+  // Append 'li' and contents
+  $stylelist.appendChild($li);
+
+  // Set settings
+  settings[key] = {};
+}
+
+// Test if current selected method and userstyle are compatible with built-in settings
+var hasSettings = () => (method === 'hjs' || method === 'hcs' || method === 'pcs') && (cache['./data/settingsandpvw/' + userstyle + '.json'].hasOwnProperty('settings'));
 
 // Read URL
 let myURL = new URL(window.location.href);
 let params = new URLSearchParams(myURL.search);
-let method = params.has('m') ? params.get('m') : 'usc';
+let method = params.has('m') ? params.get('m') : 'ucs';
 let userstyle = params.has('s') ? params.get('s') : 'dse';
 async function readURL() {
   for (var i = 0; i < $methods.length; i++) if ($methods[i].getAttribute('code') === method) {$methods[i].classList.add('selected'); break;}
@@ -52,14 +84,17 @@ $logo.style.fontSize = $header.offsetHeight / 2 - 20 + "px";
 // If selected userstyle
 for (let i = 0; i < $userstyles.length; i++) {
   $userstyles.item(i).addEventListener('click', async function() {
+    // Set visual
     for (var i = 0; i < $userstyles.length; i++) $userstyles.item(i).classList.remove('selected');
     this.classList.add('selected');
-    userstyle = this.getAttribute('code');
     // Clear settings
-    for (let [key, value] of Object.entries(settings)) params.delete(key);
+    for (let [key, value] of Object.entries(settings[userstyle])) params.delete(key);
     let $pickrs = document.getElementsByClassName('pcr-app');
     while ($pickrs.length > 0) $pickrs[0].parentNode.removeChild($pickrs[0]);
-    settings = {};
+    // Remove previous preview content
+    $pvwwindow.innerHTML = "";
+    // Update stuff
+    userstyle = this.getAttribute('code');
     await setSections();
     updateURL();
   });
@@ -74,10 +109,12 @@ async function selectbarClicked($el) {
   if ($el.classList.contains('method')) {
     method = $el.getAttribute('code');
     // Clear settings
-    for (let [key, value] of Object.entries(settings)) params.delete(key);
+    for (let [key, value] of Object.entries(settings[userstyle])) params.delete(key);
     await setSections();
   } else {
-    settings[$el.parentNode.parentNode.getAttribute('code')] = $el.getAttribute('code');
+    settings[userstyle][$el.parentNode.parentNode.getAttribute('code')] = $el.getAttribute('code');
+    console.log('bf: ' + $el.getAttribute('pvwmarkup'));
+    if ($el.hasAttribute('pvwmarkup')) colorPvw(JSON.parse($el.getAttribute('pvwmarkup')));
   }
   updateURL();
 }
@@ -86,10 +123,45 @@ for (var i = 0; i < $methods.length; i++) $methods.item(i).addEventListener('cli
 // If clicked checkbox
 function checkboxClicked($el) {
   $el.classList.toggle('active');
-  settings[$el.parentNode.getAttribute('code')] = $el.classList.contains('active');
+  settings[userstyle][$el.parentNode.getAttribute('code')] = $el.classList.contains('active');
   if ($el.classList.contains('hasGroup')) $el.nextElementSibling.nextElementSibling.classList.toggle('hidden');
   updateURL();
 }
+
+// If clicked on randomize
+function randomizeSettings(src) {
+  var randomProperty = function(obj) {
+    var keys = Object.keys(obj);
+    return obj[keys[ keys.length * Math.random() << 0]];
+  };
+  var getHex = (n) => n < 10 ? n : ['a', 'b', 'c', 'd', 'e', 'f'][n - 10];
+  for (let [key, value] of Object.entries(src)) {
+    switch (value.type) {
+      case 'selectbar':
+        pvwColoring = {...pvwColoring, ...randomProperty(value.options).pvwmarkup};
+        break;
+      case 'checkbox':
+        if (value.hasOwnProperty('pvwmarkup') && Math.random() < 0.5) pvwColoring = {...pvwColoring, ...value.pvwmarkup}
+        if (value.hasOwnProperty('group')) randomizeSettings(value.group);
+        break;
+      case 'color':
+        let color = '#';
+        for (var i = 0; i < 6; i++) color += getHex(Math.round(Math.random() * 15));
+        pvwColoring[key] = color;
+        break;
+      default:
+        console.error("Could not identify setting type \"" + optionValue.type + "\"");
+    }
+  }
+}
+$pvwrandomize.addEventListener('click', async function() {
+  let cachePath = './data/settingsandpvw/' + userstyle + '.json';
+  await fetchToCache(cachePath, true);
+  pvwColoring = {};
+  randomizeSettings(cache[cachePath].settings);
+  console.log(pvwColoring);
+  colorPvw(pvwColoring);
+});
 
 
 // Update URL
@@ -99,7 +171,7 @@ function updateURL() {
   params.set('m', method);
   params.set('s', userstyle);
   // Settings
-  if (hasSettings()) for (let [key, value] of Object.entries(settings)) params.set(key, value);
+  if (hasSettings()) for (let [key, value] of Object.entries(settings[userstyle])) params.set(key, value);
   // --
   // Update full URL
   window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
@@ -124,19 +196,38 @@ window.addEventListener("resize", resized);
 
 // Set section visibility and settings
 async function setSections() {
+  // Load settings
+  let cachePath = './data/settingsandpvw/' + userstyle + '.json';
+  await fetchToCache(cachePath, true);
+  // Update preview
+  createPvw();
   if (hasSettings()) {
-    // Load settings
-    let cachePath = './data/settingsandpvw/' + userstyle + '.json';
-    await fetchToCache(cachePath, true);
     // Update settings
-    $settingslist.innerHTML = settingsToHTML(cache[cachePath]).innerHTML;
+    pvwColoring = {};
+    $settingslist.innerHTML = settingsToHTML(cache[cachePath].settings).innerHTML;
     // Add functionality to color inputs
     addColorPickers(document.querySelectorAll('#settingslist .color'));
-    // Show settings
-    $settings.classList.remove('hidden');
+    $pvwwarning.classList.add('hidden');
+    // Color preview
+    console.log(pvwColoring);
+    colorPvw(pvwColoring);
+    $pvwrandomize.classList.add('hidden');
+    $pvwwarning.classList.add('hidden');
   } else {
-    $settings.classList.add('hidden');
+    let $small = document.createElement('small');
+    if (cache[cachePath].hasOwnProperty('settings')) {
+      $small.textContent = method === 'ucs' ? "The settings are editable in the extension" : "THe settings are editable at userstyles.org";
+      $pvwrandomize.classList.remove('hidden');
+      $pvwwarning.classList.remove('hidden')
+    } else {
+      $small.textContent = "There are no settings available for this userstyle";
+      $pvwrandomize.classList.add('hidden');
+      $pvwwarning.classList.add('hidden');
+    }
+    $settingslist.innerHTML = "";
+    $settingslist.appendChild($small);
   }
+  // Update preview width and height
   resized();
 }
 
@@ -146,6 +237,42 @@ $saveLinkCopy.addEventListener('click', function() {
   $saveLinkInput.setSelectionRange(0, 99999);
   document.execCommand('copy');
 });
+
+// Create elements for preview(window)
+function createPvw() {
+  console.log('hi');
+  let cachePath = './data/settingsandpvw/' + userstyle + '.json';
+  for (let [key, value] of Object.entries(cache[cachePath].preview)) {
+    let $el = document.createElement('div');
+    // Set ID
+    $el.setAttribute('id', 'pvw--' + key);
+    // Set pos
+    typeof value.anchor === 'undefined' || value.anchor[1] ? $el.style.left = value.pos[0] : $el.style.right = value.pos[0];
+    typeof value.anchor === 'undefined' || value.anchor[0] ? $el.style.top = value.pos[1] : $el.style.bottom = value.pos[1];
+    // Set width and height
+    $el.style.width = value.width;
+    $el.style.height = value.height;
+    // Set border radius
+    if (value.hasOwnProperty('borderRadius')) $el.style.borderRadius = value.borderRadius;
+    // If always a color...
+    if (value.hasOwnProperty('always')) $el.style.backgroundColor = value['always'];
+    $pvwwindow.appendChild($el);
+  }
+  if (cache[cachePath].hasOwnProperty('settings')) {
+    // Randomize coloring
+    randomizeSettings(cache[cachePath].settings);
+    colorPvw(pvwColoring);
+  }
+}
+// Color pvw
+function colorPvw(markup) {
+  let $els = $pvwwindow.children;
+  for (var i = 0; i < $els.length; i++) {
+    let key = $els[i].id.slice(5);
+    if (markup.hasOwnProperty(key)) $els[i].style.backgroundColor = markup[key];
+  }
+  if (markup.hasOwnProperty('bg')) $pvwwindow.style.backgroundColor = markup['bg'];
+}
 
 // Convert settings from JSON to HTML
 function settingsToHTML(src) {
@@ -161,12 +288,7 @@ function settingsToHTML(src) {
     $setting.appendChild($label);
 
     // Create content
-    let $optionContent;
-    if (optionValue.type === 'selectbar') {
-      $optionContent = document.createElement('ul');
-    } else {
-      $optionContent = document.createElement('div');
-    }
+    let $optionContent = document.createElement(optionValue.type === 'selectbar' ? 'ul' : 'div');
     // Type specific functionality
     switch (optionValue.type) {
       case 'selectbar':
@@ -175,33 +297,38 @@ function settingsToHTML(src) {
           let $li = document.createElement('li');
           $li.classList.add('selectbaroption');
           $li.setAttribute('onclick', 'selectbarClicked(this)');
+          if (selectOptionValue.hasOwnProperty('pvwmarkup')) $li.setAttribute('pvwmarkup', JSON.stringify(selectOptionValue.pvwmarkup));
           $li.setAttribute('code', selectOption)
           $li.innerHTML = selectOptionValue.label;
           $optionContent.appendChild($li);
         }
         // Set state
-        settings[option] = params.has(option) ? params.get(option) : $optionContent.firstChild.getAttribute('code');
+        if (!settings[userstyle].hasOwnProperty(option)) settings[userstyle][option] = params.has(option) ? params.get(option) : $optionContent.firstChild.getAttribute('code');
         let $children = $optionContent.children;
-        for (var i = 0; i < $children.length; i++) if ($children[i].getAttribute('code') === settings[option]) {$children[i].classList.add('selected'); break;}
+        for (var i = 0; i < $children.length; i++) if ($children[i].getAttribute('code') === settings[userstyle][option]) {$children[i].classList.add('selected'); break;}
+        // Add coloring to preview
+        if (optionValue.options[settings[userstyle][option]].hasOwnProperty('pvwmarkup')) pvwColoring = {...pvwColoring, ...optionValue.options[settings[userstyle][option]].pvwmarkup};
         break;
       case 'checkbox':
         $optionContent.setAttribute('onclick', 'checkboxClicked(this)');
         // Set state
-        settings[option] = params.has(option) ? params.get(option).toLowerCase() === 'true' : typeof optionValue.default === 'undefined' ? false : optionValue.default;
-        if(settings[option]) $optionContent.classList.add('active');
+        if (!settings[userstyle].hasOwnProperty(option)) settings[userstyle][option] = params.has(option) ? params.get(option).toLowerCase() === 'true' : typeof optionValue.default === 'undefined' ? false : optionValue.default;
+        if (settings[userstyle][option]) $optionContent.classList.add('active');
         if (optionValue.hasOwnProperty('group')) {
           $optionContent.classList.add('hasGroup');
           let $group = document.createElement('ul');
           $group.classList.add('group');
-          if (!settings[option]) $group.classList.add('hidden');
+          if (!settings[userstyle][option]) $group.classList.add('hidden');
           $group.innerHTML = settingsToHTML(optionValue.group).innerHTML;
           $setting.appendChild($group);
         }
+        // Add coloring to preview
+        if (optionValue.hasOwnProperty('pvwmarkup') && settings[userstyle][option]) pvwColoring = {...pvwColoring, ...optionValue.pvwmarkup};
         break;
       case 'color':
         // Set state
-        settings[option] = params.has(option) ? params.get(option) : optionValue.default;
-        $optionContent.setAttribute('default', settings[option]);
+        if (!settings[userstyle].hasOwnProperty(option)) settings[userstyle][option] = params.has(option) ? params.get(option) : optionValue.default;
+        $optionContent.setAttribute('default', settings[userstyle][option]);
         // The color pickers themselves will be added via addColorPickers() after all of the elements become part of the DOM.
         break;
       default:
@@ -215,7 +342,6 @@ function settingsToHTML(src) {
       $setting.classList.add('spaceunder');
     }
     $setting.setAttribute('code', option);
-
     // Append setting
     $newsettings.appendChild($setting);
   }
@@ -268,7 +394,7 @@ function addColorPickers($els) {
     // Hide after saving and save into settings
     pickr.on('save', color => {
       pickr.hide();
-      settings[pickr._root.root.parentNode.parentNode.getAttribute('code')] = color.toHEXA().toString();
+      settings[userstyle][pickr._root.root.parentNode.parentNode.getAttribute('code')] = color.toHEXA().toString();
       updateURL();
     });
   }

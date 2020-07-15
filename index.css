@@ -124,20 +124,37 @@ section small {
   border-radius: 50%;
 }
 
-#preview h2 {
+#preview h2, #pvwwarning {
   width: 80%;
   float: right;
 }
+#pvwrandomize {
+  transform: rotate(90deg);
+  background: transparent;
+  border: none;
+  color: rgb(150, 150, 150);
+  font-size: 1.2rem;
+  margin: 0 10px;
+  cursor: pointer;
+}
+#pvwrandomize:hover {
+  color: rgb(120, 120, 120);
+}
 #previewwindow {
+  position: relative;
   display: block;
   width: 80%;
   float: right;
   border: 4px solid rgb(220, 220, 220);
-  background-color: rgb(240, 240, 240);
+  /* background: linear-gradient(rgba(200, 200, 200, 0.5), rgba(200, 200, 200, 0.5)), url('./img/scratch.png');
+  background-size: cover; */
   border-radius: 20px;
+  overflow: hidden;
 }
-#settings.hidden + #preview {transform: translateX(76.25%); width: 40%;}
-#settings.hidden + #preview * {width: 100%;}
+#previewwindow div {
+  position: absolute;
+  display: block;
+}
 
 
 #bInstall {
