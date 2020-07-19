@@ -151,10 +151,6 @@ section small {
   border-radius: 20px;
   overflow: hidden;
 }
-#previewwindow div {
-  position: absolute;
-  display: block;
-}
 
 
 #bInstall {

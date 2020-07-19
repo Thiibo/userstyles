@@ -20,9 +20,10 @@
   },
   "preview": {
     "test": {
-      "pos": [0, 0],
-      "width": 0,
-      "height": 0
+      "css": {
+        "width": 0,
+        "height": 0
+      }
     }
   }
 }

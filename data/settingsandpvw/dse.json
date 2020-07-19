@@ -9,7 +9,7 @@
           "pvwmarkup": {
             "bg": "#424242",
             "header": "#333",
-            "inner": "#2d2d2d"
+            "blockdiv": "#2d2d2d"
           }
         },
         "sb": {
@@ -17,7 +17,7 @@
           "pvwmarkup": {
             "bg": "#3e4155",
             "header": "#343542",
-            "inner": "#2f303c"
+            "blockdiv": "#2f303c"
           }
         },
         "db": {
@@ -25,7 +25,7 @@
           "pvwmarkup": {
             "bg": "#212121",
             "header": "#191919",
-            "inner": "#171717"
+            "blockdiv": "#171717"
           }
         }
       }
@@ -49,22 +49,33 @@
   },
   "preview": {
     "header": {
-      "pos": [0, 0],
-      "width": "100%",
-      "height": "1.5vh"
+      "css": {
+        "width": "100%",
+        "height": "1.5vh"
+      }
     },
-    "inner": {
-      "pos": [0, 0],
-      "anchor": [false, true],
-      "width": "calc(100% - 9vw)",
-      "height": "19.6vh"
-    },
-    "stage": {
-      "pos": ["0.1vw", "3vh"],
-      "anchor": [true, false],
-      "width": "8.2vw",
-      "height": "11.9vh",
-      "always": "white"
+    "main": {
+      "css": {
+        "width": "100%",
+        "height": "calc(100% - 1.5vh)"
+      },
+      "children": {
+        "blockdiv": {
+          "css": {
+            "display": "inline-block",
+            "width": "calc(100% - 9vw)",
+            "height": "19.6vh"
+          }
+        },
+        "stage": {
+          "css": {
+            "display": "inline-block",
+            "width": "8.2vw",
+            "height": "11.9vh",
+            "background-color": "white"
+          }
+        }
+      }
     }
   }
 }

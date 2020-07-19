@@ -15,7 +15,7 @@ const $saveLinkCopy = document.getElementById('saveLinkCopy');
 // VARIABLES
 let cache = {};
 let settings = {};
-var pvwColoring; // Global variable for setSections() and $pvwrandomize.click()
+var pvwColoring; // Global variable for setSections(), $pvwrandomize.click() and colorPvw()
 
 // Set userstyles
 const USERSTYLES = {
@@ -76,6 +76,9 @@ async function fetchToCache(path, _isJSON) {
     return false;
   }
 }
+
+// Adding CSS from obj
+function updateCSS($el, css) {for (let [k, v] of Object.entries(css)) $el.style[k] = v;}
 
 // Set logo size
 $logo.style.fontSize = $header.offsetHeight / 2 - 20 + "px";
@@ -240,33 +243,37 @@ $saveLinkCopy.addEventListener('click', function() {
 
 // Create elements for preview(window)
 function createPvw() {
-  console.log('hi');
-  let cachePath = './data/settingsandpvw/' + userstyle + '.json';
-  for (let [key, value] of Object.entries(cache[cachePath].preview)) {
-    let $el = document.createElement('div');
-    // Set ID
-    $el.setAttribute('id', 'pvw--' + key);
-    // Set pos
-    typeof value.anchor === 'undefined' || value.anchor[1] ? $el.style.left = value.pos[0] : $el.style.right = value.pos[0];
-    typeof value.anchor === 'undefined' || value.anchor[0] ? $el.style.top = value.pos[1] : $el.style.bottom = value.pos[1];
-    // Set width and height
-    $el.style.width = value.width;
-    $el.style.height = value.height;
-    // Set border radius
-    if (value.hasOwnProperty('borderRadius')) $el.style.borderRadius = value.borderRadius;
-    // If always a color...
-    if (value.hasOwnProperty('always')) $el.style.backgroundColor = value['always'];
-    $pvwwindow.appendChild($el);
+  // Create divs function
+  var createPvwDivs = function(src) {
+    let $div = document.createElement('div');
+    for (let [key, value] of Object.entries(src)) {
+      let $el = document.createElement('div');
+      // Set ID and class
+      $el.setAttribute('id', 'pvw--' + key);
+      $el.classList.add('pvwElement');
+      // Set CSS
+      updateCSS($el, value.css);
+      // Add children
+      if (value.hasOwnProperty('children')) $el.innerHTML = createPvwDivs(value.children).innerHTML;
+      // Append to element
+      $div.appendChild($el);
+    }
+    return $div;
   }
+
+  // Creating preview
+  let cachePath = './data/settingsandpvw/' + userstyle + '.json';
+  $pvwwindow.innerHTML = createPvwDivs(cache[cachePath].preview).innerHTML;
+
+  // Randomize coloring
   if (cache[cachePath].hasOwnProperty('settings')) {
-    // Randomize coloring
     randomizeSettings(cache[cachePath].settings);
     colorPvw(pvwColoring);
   }
 }
 // Color pvw
 function colorPvw(markup) {
-  let $els = $pvwwindow.children;
+  let $els = document.getElementsByClassName('pvwElement');
   for (var i = 0; i < $els.length; i++) {
     let key = $els[i].id.slice(5);
     if (markup.hasOwnProperty(key)) $els[i].style.backgroundColor = markup[key];
